@@ -1,34 +1,33 @@
-'use strict';
+"use strict";
 
 // This is a modified version of screeps-profiler taken from https://github.com/samogot/screeps-profiler
-
 
 let usedOnStart = 0;
 let enabled = false;
 let depth = 0;
-let parentFn = '(tick)';
+let parentFn = "(tick)";
 
 function AlreadyWrappedError() {
-    this.name = 'AlreadyWrappedError';
-    this.message = 'Error attempted to double wrap a function.';
-    this.stack = ((new Error())).stack;
+    this.name = "AlreadyWrappedError";
+    this.message = "Error attempted to double wrap a function.";
+    this.stack = new Error().stack;
 }
 
 function setupProfiler() {
     depth = 0; // reset depth, this needs to be done each tick.
-    parentFn = '(tick)';
+    parentFn = "(tick)";
     Game.profiler = {
         stream(duration, filter) {
-            setupMemory('stream', duration || 10, filter);
+            setupMemory("stream", duration || 10, filter);
         },
         email(duration, filter) {
-            setupMemory('email', duration || 100, filter);
+            setupMemory("email", duration || 100, filter);
         },
         profile(duration, filter) {
-            setupMemory('profile', duration || 100, filter);
+            setupMemory("profile", duration || 100, filter);
         },
         background(filter) {
-            setupMemory('background', false, filter);
+            setupMemory("background", false, filter);
         },
         callgrind() {
             const id = `id${Math.random()}`;
@@ -50,16 +49,24 @@ function setupProfiler() {
 </script>
       `;
             /* eslint-enable */
-            console.log(download.split('\n').map((s) => s.trim()).join(''));
+            console.log(
+                download
+                    .split("\n")
+                    .map((s) => s.trim())
+                    .join(""),
+            );
         },
         restart() {
             if (Profiler.isProfiling()) {
                 const filter = Memory.profiler.filter;
                 let duration = false;
-                if (!!Memory.profiler.disableTick) {
+                if (Memory.profiler.disableTick) {
                     // Calculate the original duration, profile is enabled on the tick after the first call,
                     // so add 1.
-                    duration = Memory.profiler.disableTick - Memory.profiler.enabledTick + 1;
+                    duration =
+                        Memory.profiler.disableTick -
+                        Memory.profiler.enabledTick +
+                        1;
                 }
                 const type = Memory.profiler.type;
                 setupMemory(type, duration, filter);
@@ -74,7 +81,9 @@ function setupProfiler() {
 
 function setupMemory(profileType, duration, filter) {
     resetMemory();
-    const disableTick = Number.isInteger(duration) ? Game.time + duration : false;
+    const disableTick = Number.isInteger(duration)
+        ? Game.time + duration
+        : false;
     if (!Memory.profiler) {
         Memory.profiler = {
             map: {},
@@ -105,11 +114,11 @@ function getFilter() {
 }
 
 const functionBlackList = [
-    'getUsed', // Let's avoid wrapping this... may lead to recursion issues and should be inexpensive.
-    'constructor', // es6 class constructors need to be called with `new`
+    "getUsed", // Let's avoid wrapping this... may lead to recursion issues and should be inexpensive.
+    "constructor", // es6 class constructors need to be called with `new`
 ];
 
-const commonProperties = ['length', 'name', 'arguments', 'caller', 'prototype'];
+const commonProperties = ["length", "name", "arguments", "caller", "prototype"];
 
 function wrapFunction(name, originalFunction) {
     if (originalFunction.profilerWrapped) {
@@ -154,7 +163,7 @@ function wrapFunction(name, originalFunction) {
     wrappedFunction.toString = () =>
         `// screeps-profiler wrapped function:\n${originalFunction.toString()}`;
 
-    Object.getOwnPropertyNames(originalFunction).forEach(property => {
+    Object.getOwnPropertyNames(originalFunction).forEach((property) => {
         if (!commonProperties.includes(property)) {
             wrappedFunction[property] = originalFunction[property];
         }
@@ -164,7 +173,7 @@ function wrapFunction(name, originalFunction) {
 }
 
 function hookUpPrototypes() {
-    Profiler.prototypes.forEach(proto => {
+    Profiler.prototypes.forEach((proto) => {
         profileObjectFunctions(proto.val, proto.name);
     });
 }
@@ -175,7 +184,7 @@ function profileObjectFunctions(object, label) {
     }
     const objectToWrap = object;
 
-    Object.getOwnPropertyNames(objectToWrap).forEach(functionName => {
+    Object.getOwnPropertyNames(objectToWrap).forEach((functionName) => {
         const extendedLabel = `${label}.${functionName}`;
 
         const isBlackListed = functionBlackList.indexOf(functionName) !== -1;
@@ -183,7 +192,10 @@ function profileObjectFunctions(object, label) {
             return;
         }
 
-        const descriptor = Object.getOwnPropertyDescriptor(objectToWrap, functionName);
+        const descriptor = Object.getOwnPropertyDescriptor(
+            objectToWrap,
+            functionName,
+        );
         if (!descriptor) {
             return;
         }
@@ -199,24 +211,37 @@ function profileObjectFunctions(object, label) {
 
             if (descriptor.get) {
                 const extendedLabelGet = `${extendedLabel}:get`;
-                profileDescriptor.get = profileFunction(descriptor.get, extendedLabelGet);
+                profileDescriptor.get = profileFunction(
+                    descriptor.get,
+                    extendedLabelGet,
+                );
             }
 
             if (descriptor.set) {
                 const extendedLabelSet = `${extendedLabel}:set`;
-                profileDescriptor.set = profileFunction(descriptor.set, extendedLabelSet);
+                profileDescriptor.set = profileFunction(
+                    descriptor.set,
+                    extendedLabelSet,
+                );
             }
 
-            Object.defineProperty(objectToWrap, functionName, profileDescriptor);
+            Object.defineProperty(
+                objectToWrap,
+                functionName,
+                profileDescriptor,
+            );
             return;
         }
 
-        const isFunction = typeof descriptor.value === 'function';
+        const isFunction = typeof descriptor.value === "function";
         if (!isFunction || !descriptor.writable) {
             return;
         }
         const originalFunction = objectToWrap[functionName];
-        objectToWrap[functionName] = profileFunction(originalFunction, extendedLabel);
+        objectToWrap[functionName] = profileFunction(
+            originalFunction,
+            extendedLabel,
+        );
     });
 
     return objectToWrap;
@@ -225,8 +250,8 @@ function profileObjectFunctions(object, label) {
 function profileFunction(fn, functionName) {
     const fnName = functionName || fn.name;
     if (!fnName) {
-        console.log('Couldn\'t find a function name for - ', fn);
-        console.log('Will not profile this function.');
+        console.log("Couldn't find a function name for - ", fn);
+        console.log("Will not profile this function.");
         return fn;
     }
 
@@ -244,18 +269,19 @@ const Profiler = {
 
     callgrind() {
         const elapsedTicks = Game.time - Memory.profiler.enabledTick + 1;
-        Memory.profiler.map['(tick)'].calls = elapsedTicks;
-        Memory.profiler.map['(tick)'].time = Memory.profiler.totalTime;
-        Profiler.checkMapItem('(root)');
-        Memory.profiler.map['(root)'].calls = 1;
-        Memory.profiler.map['(root)'].time = Memory.profiler.totalTime;
-        Profiler.checkMapItem('(tick)', Memory.profiler.map['(root)'].subs);
-        Memory.profiler.map['(root)'].subs['(tick)'].calls = elapsedTicks;
-        Memory.profiler.map['(root)'].subs['(tick)'].time = Memory.profiler.totalTime;
+        Memory.profiler.map["(tick)"].calls = elapsedTicks;
+        Memory.profiler.map["(tick)"].time = Memory.profiler.totalTime;
+        Profiler.checkMapItem("(root)");
+        Memory.profiler.map["(root)"].calls = 1;
+        Memory.profiler.map["(root)"].time = Memory.profiler.totalTime;
+        Profiler.checkMapItem("(tick)", Memory.profiler.map["(root)"].subs);
+        Memory.profiler.map["(root)"].subs["(tick)"].calls = elapsedTicks;
+        Memory.profiler.map["(root)"].subs["(tick)"].time =
+            Memory.profiler.totalTime;
         let body = `events: ns\nsummary: ${Math.round(Memory.profiler.totalTime * 1000000)}\n`;
         for (const fnName of Object.keys(Memory.profiler.map)) {
             const fn = Memory.profiler.map[fnName];
-            let callsBody = '';
+            let callsBody = "";
             let callsTime = 0;
             for (const callName of Object.keys(fn.subs)) {
                 const call = fn.subs[callName];
@@ -271,18 +297,21 @@ const Profiler = {
     output(passedOutputLengthLimit) {
         const outputLengthLimit = passedOutputLengthLimit || 1000;
         if (!Memory.profiler || !Memory.profiler.enabledTick) {
-            return 'Profiler not active.';
+            return "Profiler not active.";
         }
 
-        const endTick = Math.min(Memory.profiler.disableTick || Game.time, Game.time);
+        const endTick = Math.min(
+            Memory.profiler.disableTick || Game.time,
+            Game.time,
+        );
         const startTick = Memory.profiler.enabledTick + 1;
         const elapsedTicks = endTick - startTick;
-        const header = 'calls\t\ttime\t\tavg\t\tfunction';
+        const header = "calls\t\ttime\t\tavg\t\tfunction";
         const footer = [
             `Avg: ${(Memory.profiler.totalTime / elapsedTicks).toFixed(2)}`,
             `Total: ${Memory.profiler.totalTime.toFixed(2)}`,
             `Ticks: ${elapsedTicks}`,
-        ].join('\t');
+        ].join("\t");
 
         const lines = [header];
         let currentLength = header.length + 1 + footer.length;
@@ -299,73 +328,75 @@ const Profiler = {
             }
         }
         lines.push(footer);
-        return lines.join('\n');
+        return lines.join("\n");
     },
 
     lines() {
-        const stats = Object.keys(Memory.profiler.map).map(functionName => {
-            const functionCalls = Memory.profiler.map[functionName];
-            return {
-                name: functionName,
-                calls: functionCalls.calls,
-                totalTime: functionCalls.time,
-                averageTime: functionCalls.time / functionCalls.calls,
-            };
-        }).sort((val1, val2) => {
-            return val2.totalTime - val1.totalTime;
-        });
+        const stats = Object.keys(Memory.profiler.map)
+            .map((functionName) => {
+                const functionCalls = Memory.profiler.map[functionName];
+                return {
+                    name: functionName,
+                    calls: functionCalls.calls,
+                    totalTime: functionCalls.time,
+                    averageTime: functionCalls.time / functionCalls.calls,
+                };
+            })
+            .sort((val1, val2) => {
+                return val2.totalTime - val1.totalTime;
+            });
 
-        const lines = stats.map(data => {
+        const lines = stats.map((data) => {
             return [
                 data.calls,
                 data.totalTime.toFixed(1),
                 data.averageTime.toFixed(3),
                 data.name,
-            ].join('\t\t');
+            ].join("\t\t");
         });
 
         return lines;
     },
 
     prototypes: [
-        {name: 'Game', val: global.Game},
-        {name: 'Map', val: global.Game.map},
-        {name: 'Market', val: global.Game.market},
-        {name: 'PathFinder', val: global.PathFinder},
-        {name: 'RawMemory', val: global.RawMemory},
-        {name: 'ConstructionSite', val: global.ConstructionSite},
-        {name: 'Creep', val: global.Creep},
-        {name: 'Flag', val: global.Flag},
-        {name: 'Mineral', val: global.Mineral},
-        {name: 'Nuke', val: global.Nuke},
-        {name: 'OwnedStructure', val: global.OwnedStructure},
-        {name: 'CostMatrix', val: global.PathFinder.CostMatrix},
-        {name: 'Resource', val: global.Resource},
-        {name: 'Room', val: global.Room},
-        {name: 'RoomObject', val: global.RoomObject},
-        {name: 'RoomPosition', val: global.RoomPosition},
-        {name: 'RoomVisual', val: global.RoomVisual},
-        {name: 'Source', val: global.Source},
-        {name: 'Structure', val: global.Structure},
-        {name: 'StructureContainer', val: global.StructureContainer},
-        {name: 'StructureController', val: global.StructureController},
-        {name: 'StructureExtension', val: global.StructureExtension},
-        {name: 'StructureExtractor', val: global.StructureExtractor},
-        {name: 'StructureKeeperLair', val: global.StructureKeeperLair},
-        {name: 'StructureLab', val: global.StructureLab},
-        {name: 'StructureLink', val: global.StructureLink},
-        {name: 'StructureNuker', val: global.StructureNuker},
-        {name: 'StructureObserver', val: global.StructureObserver},
-        {name: 'StructurePowerBank', val: global.StructurePowerBank},
-        {name: 'StructurePowerSpawn', val: global.StructurePowerSpawn},
-        {name: 'StructurePortal', val: global.StructurePortal},
-        {name: 'StructureRampart', val: global.StructureRampart},
-        {name: 'StructureRoad', val: global.StructureRoad},
-        {name: 'StructureSpawn', val: global.StructureSpawn},
-        {name: 'StructureStorage', val: global.StructureStorage},
-        {name: 'StructureTerminal', val: global.StructureTerminal},
-        {name: 'StructureTower', val: global.StructureTower},
-        {name: 'StructureWall', val: global.StructureWall},
+        { name: "Game", val: global.Game },
+        { name: "Map", val: global.Game.map },
+        { name: "Market", val: global.Game.market },
+        { name: "PathFinder", val: global.PathFinder },
+        { name: "RawMemory", val: global.RawMemory },
+        { name: "ConstructionSite", val: global.ConstructionSite },
+        { name: "Creep", val: global.Creep },
+        { name: "Flag", val: global.Flag },
+        { name: "Mineral", val: global.Mineral },
+        { name: "Nuke", val: global.Nuke },
+        { name: "OwnedStructure", val: global.OwnedStructure },
+        { name: "CostMatrix", val: global.PathFinder.CostMatrix },
+        { name: "Resource", val: global.Resource },
+        { name: "Room", val: global.Room },
+        { name: "RoomObject", val: global.RoomObject },
+        { name: "RoomPosition", val: global.RoomPosition },
+        { name: "RoomVisual", val: global.RoomVisual },
+        { name: "Source", val: global.Source },
+        { name: "Structure", val: global.Structure },
+        { name: "StructureContainer", val: global.StructureContainer },
+        { name: "StructureController", val: global.StructureController },
+        { name: "StructureExtension", val: global.StructureExtension },
+        { name: "StructureExtractor", val: global.StructureExtractor },
+        { name: "StructureKeeperLair", val: global.StructureKeeperLair },
+        { name: "StructureLab", val: global.StructureLab },
+        { name: "StructureLink", val: global.StructureLink },
+        { name: "StructureNuker", val: global.StructureNuker },
+        { name: "StructureObserver", val: global.StructureObserver },
+        { name: "StructurePowerBank", val: global.StructurePowerBank },
+        { name: "StructurePowerSpawn", val: global.StructurePowerSpawn },
+        { name: "StructurePortal", val: global.StructurePortal },
+        { name: "StructureRampart", val: global.StructureRampart },
+        { name: "StructureRoad", val: global.StructureRoad },
+        { name: "StructureSpawn", val: global.StructureSpawn },
+        { name: "StructureStorage", val: global.StructureStorage },
+        { name: "StructureTerminal", val: global.StructureTerminal },
+        { name: "StructureTower", val: global.StructureTower },
+        { name: "StructureWall", val: global.StructureWall },
     ],
 
     checkMapItem(functionName, map = Memory.profiler.map) {
@@ -411,7 +442,10 @@ const Profiler = {
         if (!enabled || !Memory.profiler) {
             return false;
         }
-        return !Memory.profiler.disableTick || Game.time <= Memory.profiler.disableTick;
+        return (
+            !Memory.profiler.disableTick ||
+            Game.time <= Memory.profiler.disableTick
+        );
     },
 
     type() {
@@ -419,14 +453,17 @@ const Profiler = {
     },
 
     shouldPrint() {
-        const streaming = Profiler.type() === 'stream';
-        const profiling = Profiler.type() === 'profile';
+        const streaming = Profiler.type() === "stream";
+        const profiling = Profiler.type() === "profile";
         const onEndingTick = Memory.profiler.disableTick === Game.time;
         return streaming || (profiling && onEndingTick);
     },
 
     shouldEmail() {
-        return Profiler.type() === 'email' && Memory.profiler.disableTick === Game.time;
+        return (
+            Profiler.type() === "email" &&
+            Memory.profiler.disableTick === Game.time
+        );
     },
 };
 

@@ -1,17 +1,25 @@
-declare const __VERSION__: string;
-global.__VERSION__ = '0.5.2';
+/* eslint-disable @typescript-eslint/no-unused-vars */
+declare const __VERSION__: string
+global.__VERSION__ = '0.5.2'
 
-declare function deref(ref: string): RoomObject | null;
+declare function deref (ref: string): RoomObject | null
 
-global.deref = function(ref: string): RoomObject | null { // dereference any object from identifier
-	return Game.getObjectById(ref) || Game.flags[ref] || Game.creeps[ref] || Game.spawns[ref] || null;
-};
+global.deref = function (ref: Id<Structure>): RoomObject | null {
+  // dereference any object from identifier
+  return (
+    Game.getObjectById(ref) ||
+		Game.flags[ref] ||
+		Game.creeps[ref] ||
+		Game.spawns[ref] ||
+		null
+  )
+}
 
-declare function derefRoomPosition(protoPos: ProtoPos): RoomPosition;
+declare function derefRoomPosition (protoPos: ProtoPos): RoomPosition
 
-global.derefRoomPosition = function(protoPos: ProtoPos): RoomPosition {
-	return new RoomPosition(protoPos.x, protoPos.y, protoPos.roomName);
-};
+global.derefRoomPosition = function (protoPos: ProtoPos): RoomPosition {
+  return new RoomPosition(protoPos.x, protoPos.y, protoPos.roomName)
+}
 
 // // Assign values to the memory key aliases declared in memory.d.ts
 // global._TICK = 'T';
@@ -59,4 +67,3 @@ global.derefRoomPosition = function(protoPos: ProtoPos): RoomPosition {
 //
 // global._MNRL_MINERALTYPE = 't';
 // global._MNRL_DENSITY = 'd';
-

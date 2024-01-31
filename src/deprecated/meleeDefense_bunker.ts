@@ -55,7 +55,7 @@
 //
 // 	private handleDefender(defender: CombatZerg): void {
 // 		// // Move to a defensible position
-// 		// let isStandingInDefensePos = _.any(this.defendPositions, pos => pos.isEqualTo(defender.pos));
+// 		// let isStandingInDefensePos = _.some(this.defendPositions, pos => pos.isEqualTo(defender.pos));
 // 		// if (!isStandingInDefensePos) {
 // 		// 	let availablePositions = _.filter(this.defendPositions, pos => pos.lookFor(LOOK_CREEPS).length == 0);
 // 		// 	let target = defender.pos.findClosestByRange(availablePositions);
@@ -83,7 +83,7 @@
 // 			defender.attack(target);
 // 		}
 // 		// Move to a defensible position if there is one; else, engage target directly
-// 		let isStandingInDefensePos = _.any(this.defendPositions, pos => pos.isEqualTo(defender.pos));
+// 		let isStandingInDefensePos = _.some(this.defendPositions, pos => pos.isEqualTo(defender.pos));
 // 		if (!isStandingInDefensePos) {
 // 			let availablePositions = _.filter(this.defendPositions, pos => pos.lookFor(LOOK_CREEPS).length == 0);
 // 			let moveToDefensePos = defender.pos.findClosestByRange(availablePositions);

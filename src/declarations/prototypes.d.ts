@@ -1,250 +1,339 @@
 interface Creep {
-	hitsPredicted?: number;
-	intel?: { [property: string]: number };
-	memory: CreepMemory;
-	boosts: _ResourceConstantSansEnergy[];
-	boostCounts: { [boostType: string]: number };
-	inRampart: boolean;
+  hitsPredicted?: number
+  intel?: Record<string, number>
+  memory: CreepMemory
+  boosts: _ResourceConstantSansEnergy[]
+  boostCounts: Record<string, number>
+  inRampart: boolean
 }
 
 interface ConstructionSite {
-	isWalkable: boolean;
+  isWalkable: boolean
 }
 
-interface Flag {
+interface Flag {}
 
-}
+type Sink =
+	| StructureSpawn
+	| StructureExtension
+	| StructureLab
+	| StructurePowerSpawn
+	| StructureNuker
+	| StructureTower
 
-type Sink = StructureSpawn |
-	StructureExtension |
-	StructureLab |
-	StructurePowerSpawn |
-	StructureNuker |
-	StructureTower;
+type StorageUnit = StructureContainer | StructureTerminal | StructureStorage
 
-type StorageUnit = StructureContainer | StructureTerminal | StructureStorage;
-
-type rechargeObjectType = StructureStorage
+type rechargeObjectType =
+	| StructureStorage
 	| StructureTerminal
 	| StructureContainer
 	| StructureLink
 	| Tombstone
-	| Resource;
+	| Resource
 
 interface Room {
-	print: string;
-	my: boolean;
-	isOutpost: boolean;
-	owner: string | undefined;
-	reservedByMe: boolean;
-	signedByMe: boolean;
-	creeps: Creep[];
-	sourceKeepers: Creep[];
-	hostiles: Creep[];
-	dangerousHostiles: Creep[];
-	playerHostiles: Creep[];
-	invaders: Creep[];
-	dangerousPlayerHostiles: Creep[];
-	fleeDefaults: HasPos[];
-	hostileStructures: Structure[];
-	structures: Structure[];
-	flags: Flag[];
-	// Cached structures
-	tombstones: Tombstone[];
-	drops: { [resourceType: string]: Resource[] };
-	droppedEnergy: Resource[];
-	droppedPower: Resource[];
-	// Room structures
-	_refreshStructureCache;
-	// Multiple structures
-	spawns: StructureSpawn[];
-	extensions: StructureExtension[];
-	roads: StructureRoad[];
-	walls: StructureWall[];
-	constructedWalls: StructureWall[];
-	ramparts: StructureRampart[];
-	walkableRamparts: StructureRampart[];
-	barriers: (StructureWall | StructureRampart)[];
-	storageUnits: StorageUnit[];
-	keeperLairs: StructureKeeperLair[];
-	portals: StructurePortal[];
-	links: StructureLink[];
-	towers: StructureTower[];
-	labs: StructureLab[];
-	containers: StructureContainer[];
-	powerBanks: StructurePowerBank[];
-	// Single structures
-	observer: StructureObserver | undefined;
-	powerSpawn: StructurePowerSpawn | undefined;
-	extractor: StructureExtractor | undefined;
-	nuker: StructureNuker | undefined;
-	repairables: Structure[];
-	rechargeables: rechargeObjectType[];
-	sources: Source[];
-	mineral: Mineral | undefined;
-	constructionSites: ConstructionSite[];
-	// Used by movement library
-	// _defaultMatrix: CostMatrix;
-	// _directMatrix: CostMatrix;
-	_creepMatrix: CostMatrix;
-	// _priorityMatrices: { [priority: number]: CostMatrix };
-	// _skMatrix: CostMatrix;
-	_kitingMatrix: CostMatrix;
+  print: string
+  my: boolean
+  isOutpost: boolean
+  owner: string | undefined
+  reservedByMe: boolean
+  signedByMe: boolean
+  creeps: Creep[]
+  sourceKeepers: Creep[]
+  hostiles: Creep[]
+  dangerousHostiles: Creep[]
+  playerHostiles: Creep[]
+  invaders: Creep[]
+  dangerousPlayerHostiles: Creep[]
+  fleeDefaults: HasPos[]
+  hostileStructures: Structure[]
+  structures: Structure[]
+  flags: Flag[]
+  // Cached structures
+  tombstones: Tombstone[]
+  drops: Record<string, Resource[]>
+  droppedEnergy: Resource[]
+  droppedPower: Resource[]
+  // Room structures
+  _refreshStructureCache: () => void
+  // Multiple structures
+  spawns: StructureSpawn[]
+  extensions: StructureExtension[]
+  roads: StructureRoad[]
+  walls: StructureWall[]
+  constructedWalls: StructureWall[]
+  ramparts: StructureRampart[]
+  walkableRamparts: StructureRampart[]
+  barriers: Array<StructureWall | StructureRampart>
+  storageUnits: StorageUnit[]
+  keeperLairs: StructureKeeperLair[]
+  portals: StructurePortal[]
+  links: StructureLink[]
+  towers: StructureTower[]
+  labs: StructureLab[]
+  containers: StructureContainer[]
+  powerBanks: StructurePowerBank[]
+  // Single structures
+  observer: StructureObserver | undefined
+  powerSpawn: StructurePowerSpawn | undefined
+  extractor: StructureExtractor | undefined
+  nuker: StructureNuker | undefined
+  repairables: Structure[]
+  rechargeables: rechargeObjectType[]
+  sources: Source[]
+  mineral: Mineral | undefined
+  constructionSites: ConstructionSite[]
+  // Used by movement library
+  // _defaultMatrix: CostMatrix;
+  // _directMatrix: CostMatrix;
+  _creepMatrix: CostMatrix
+  // _priorityMatrices: { [priority: number]: CostMatrix };
+  // _skMatrix: CostMatrix;
+  _kitingMatrix: CostMatrix
 }
 
 interface RoomObject {
-	ref: string;
-	targetedBy: string[];
+  ref: Id<Structure | Creep>
+  targetedBy: string[]
 
-	serialize(): ProtoRoomObject;
+  serialize: () => ProtoRoomObject
 }
 
 interface RoomPosition {
-	print: string;
-	printPlain: string;
-	room: Room | undefined;
-	name: string;
-	coordName: string;
-	isEdge: boolean;
-	isVisible: boolean;
-	rangeToEdge: number;
-	roomCoords: Coord;
-	neighbors: RoomPosition[];
+  print: string
+  printPlain: string
+  room: Room | undefined
+  name: string
+  coordName: string
+  isEdge: boolean
+  isVisible: boolean
+  rangeToEdge: number
+  roomCoords: Coord
+  neighbors: RoomPosition[]
 
-	inRangeToPos(pos: RoomPosition, range: number): boolean;
+  inRangeToPos: (pos: RoomPosition, range: number) => boolean
 
-	inRangeToXY(x: number, y: number, range: number): boolean;
+  inRangeToXY: (x: number, y: number, range: number) => boolean
 
-	getRangeToXY(x: number, y: number): number;
+  getRangeToXY: (x: number, y: number) => number
 
-	getPositionsAtRange(range: number, includeWalls?: boolean, includeEdges?: boolean): RoomPosition[];
+  getPositionsAtRange: (
+    range: number,
+    includeWalls?: boolean,
+    includeEdges?: boolean,
+  ) => RoomPosition[]
 
-	getPositionsInRange(range: number, includeWalls?: boolean, includeEdges?: boolean): RoomPosition[];
+  getPositionsInRange: (
+    range: number,
+    includeWalls?: boolean,
+    includeEdges?: boolean,
+  ) => RoomPosition[]
 
-	getOffsetPos(dx: number, dy: number): RoomPosition;
+  getOffsetPos: (dx: number, dy: number) => RoomPosition
 
-	lookFor<T extends keyof AllLookAtTypes>(structureType: T): Array<AllLookAtTypes[T]>;
+  lookFor: <T extends keyof AllLookAtTypes>(
+    structureType: T,
+  ) => Array<AllLookAtTypes[T]>
 
-	lookForStructure(structureType: StructureConstant): Structure | undefined;
+  lookForStructure: (structureType: StructureConstant) => Structure | undefined
 
-	isWalkable(ignoreCreeps?: boolean): boolean;
+  isWalkable: (ignoreCreeps?: boolean) => boolean
 
-	availableNeighbors(ignoreCreeps?: boolean): RoomPosition[];
+  availableNeighbors: (ignoreCreeps?: boolean) => RoomPosition[]
 
-	getPositionAtDirection(direction: DirectionConstant, range?: number): RoomPosition;
+  getPositionAtDirection: (
+    direction: DirectionConstant,
+    range?: number,
+  ) => RoomPosition
 
-	getMultiRoomRangeTo(pos: RoomPosition): number;
+  getMultiRoomRangeTo: (pos: RoomPosition) => number
 
-	findClosestByLimitedRange<T>(objects: T[] | RoomPosition[], rangeLimit: number,
-								 opts?: { filter: any | string; }): T | undefined;
+  findClosestByLimitedRange: <T>(
+    objects: T[] | RoomPosition[],
+    rangeLimit: number,
+  ) => T | undefined
 
-	findClosestByMultiRoomRange<T extends _HasRoomPosition>(objects: T[]): T | undefined;
+  findClosestByMultiRoomRange: <T extends _HasRoomPosition>(
+    objects: T[],
+  ) => T | undefined
 
-	findClosestByRangeThenPath<T extends _HasRoomPosition>(objects: T[]): T | undefined;
+  findClosestByRangeThenPath: <T extends _HasRoomPosition>(
+    objects: T[],
+  ) => T | undefined
 }
 
 interface RoomVisual {
-	box(x: number, y: number, w: number, h: number, style?: LineStyle): RoomVisual;
+  box: (
+    x: number,
+    y: number,
+    w: number,
+    h: number,
+    style?: LineStyle,
+  ) => RoomVisual
 
-	infoBox(info: string[], x: number, y: number, opts?: { [option: string]: any }): RoomVisual;
+  infoBox: (
+    info: string[],
+    x: number,
+    y: number,
+    opts?: {
+      color: string
+      textstyle: boolean
+      textsize: number
+      textfont: string
+      opacity: number
+    },
+  ) => RoomVisual
 
-	multitext(textLines: string[], x: number, y: number, opts?: { [option: string]: any }): RoomVisual;
+  multitext: (
+    textLines: string[],
+    x: number,
+    y: number,
+    opts: {
+      color?: string
+      textstyle?: string
+      textsize?: number
+      textfont?: string
+      opacity?: number
+    } = {},
+  ) => RoomVisual
 
-	structure(x: number, y: number, type: string, opts?: { [option: string]: any }): RoomVisual;
+  structure: (
+    x: number,
+    y: number,
+    type: string,
+    opts?: Record<string, number>,
+  ) => RoomVisual
 
-	connectRoads(opts?: { [option: string]: any }): RoomVisual | void;
+  connectRoads: (opts?: Record<string, number>) => RoomVisual | void
 
-	speech(text: string, x: number, y: number, opts?: { [option: string]: any }): RoomVisual;
+  speech: (
+    text: string,
+    x: number,
+    y: number,
+    opts?: Record<string, number>,
+  ) => RoomVisual
 
-	animatedPosition(x: number, y: number, opts?: { [option: string]: any }): RoomVisual;
+  animatedPosition: (
+    x: number,
+    y: number,
+    opts?: {
+      color?: string
+      opacity?: number
+      radius?: number
+      frames?: number
+    },
+  ) => RoomVisual
 
-	resource(type: ResourceConstant, x: number, y: number, size?: number, opacity?: number): number;
+  resource: (
+    type: ResourceConstant,
+    x: number,
+    y: number,
+    size?: number,
+    opacity?: number,
+  ) => number
 
-	_fluid(type: string, x: number, y: number, size?: number, opacity?: number): void;
+  _fluid: (
+    type: string,
+    x: number,
+    y: number,
+    size?: number,
+    opacity?: number,
+  ) => void
 
-	_mineral(type: string, x: number, y: number, size?: number, opacity?: number): void;
+  _mineral: (
+    type: string,
+    x: number,
+    y: number,
+    size?: number,
+    opacity?: number,
+  ) => void
 
-	_compound(type: string, x: number, y: number, size?: number, opacity?: number): void;
+  _compound: (
+    type: string,
+    x: number,
+    y: number,
+    size?: number,
+    opacity?: number,
+  ) => void
 
-	test(): RoomVisual;
+  test: () => RoomVisual
 }
 
 interface Structure {
-	isWalkable: boolean;
+  isWalkable: boolean
 }
 
 interface StructureContainer {
-	energy: number;
-	isFull: boolean;
-	isEmpty: boolean;
+  energy: number
+  isFull: boolean
+  isEmpty: boolean
 }
 
 interface StructureController {
-	reservedByMe: boolean;
-	signedByMe: boolean;
-	signedByScreeps: boolean;
+  reservedByMe: boolean
+  signedByMe: boolean
+  signedByScreeps: boolean
 
-	needsReserving(reserveBuffer: number): boolean;
+  needsReserving: (reserveBuffer: number) => boolean
 }
 
 interface StructureExtension {
-	isFull: boolean;
-	isEmpty: boolean;
+  isFull: boolean
+  isEmpty: boolean
 }
 
 interface StructureLink {
-	isFull: boolean;
-	isEmpty: boolean;
+  isFull: boolean
+  isEmpty: boolean
 }
 
 interface StructureStorage {
-	energy: number;
-	isFull: boolean;
-	isEmpty: boolean;
-
+  energy: number
+  isFull: boolean
+  isEmpty: boolean
 }
 
 interface StructureSpawn {
-	isFull: boolean;
-	isEmpty: boolean;
+  isFull: boolean
+  isEmpty: boolean
 
-	cost(bodyArray: string[]): number;
+  cost: (bodyArray: string[]) => number
 }
 
 interface StructureTerminal {
-	energy: any;
-	isFull: boolean;
-	isEmpty: boolean;
-	// _send(resourceType: ResourceConstant, amount: number, destination: string, description?: string): ScreepsReturnCode;
+  energy: unknown
+  isFull: boolean
+  isEmpty: boolean
+  // _send(resourceType: ResourceConstant, amount: number, destination: string, description?: string): ScreepsReturnCode;
 }
 
 interface StructureTower {
-	isFull: boolean;
-	isEmpty: boolean;
+  isFull: boolean
+  isEmpty: boolean
 
-	// run(): void;
-	//
-	// attackNearestEnemy(): number;
-	//
-	// healNearestAlly(): number;
-	//
-	// repairNearestStructure(): number;
-	//
-	// preventRampartDecay(): number;
+  // run(): void;
+  //
+  // attackNearestEnemy(): number;
+  //
+  // healNearestAlly(): number;
+  //
+  // repairNearestStructure(): number;
+  //
+  // preventRampartDecay(): number;
 }
 
 interface Tombstone {
-	energy: number;
+  energy: number
 }
 
 interface String {
-	padRight(length: number, char?: string): string;
+  padRight: (length: number, char?: string) => string
 
-	padLeft(length: number, char?: string): string;
+  padLeft: (length: number, char?: string) => string
 }
 
 interface Number {
-	toPercent(decimals?: number): string;
+  toPercent: (decimals?: number) => string
 
-	truncate(decimals: number): number;
+  truncate: (decimals: number) => number
 }
