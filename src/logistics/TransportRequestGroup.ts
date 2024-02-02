@@ -142,7 +142,7 @@ export class TransportRequestGroup {
 
 	private getInputAmount(target: TransportRequestTarget, resourceType: ResourceConstant): number {
 		if (isStoreStructure(target)) {
-			return target.storeCapacity - _.sum(target.store);
+			return target.store.getCapacity() - target.store.getUsedCapacity();
 		} else if (isEnergyStructure(target) && resourceType == RESOURCE_ENERGY) {
 			return target.energyCapacity - target.energy;
 		} else {

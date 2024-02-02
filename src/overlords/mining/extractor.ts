@@ -55,7 +55,7 @@ export class ExtractorOverlord extends Overlord {
 
 	private registerOutputRequests(): void {
 		if (this.container) {
-			if (_.sum(this.container.store) > 0.5 * this.container.storeCapacity ||
+			if (_.sum(this.container.store) > 0.5 * this.container.store.getCapacity() ||
 				(_.sum(this.container.store) > 0 && this.drones.length == 0)) {
 				this.colony.logisticsNetwork.requestOutput(this.container, {resourceType: 'all'});
 			}

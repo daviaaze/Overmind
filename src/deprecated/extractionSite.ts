@@ -82,7 +82,7 @@
 // 	private registerOutputRequests(): void {
 // 		// Register logisticsNetwork requests if approximate predicted amount exceeds transporter capacity
 // 		if (this.output) {
-// 			if (_.sum(this.output.store) > 0.5 * this.output.storeCapacity) {
+// 			if (_.sum(this.output.store) > 0.5 * this.output.store.getCapacity()) {
 // 				this.colony.logisticsNetwork.requestOutput(this.output, {resourceType: 'all'});
 // 			} else if (_.sum(this.output.store) > 0 && this.overlord.drones.length == 0) {
 // 				this.colony.logisticsNetwork.requestOutput(this.output, {resourceType: 'all'});

@@ -234,7 +234,7 @@ export class TraderJoe implements ITradeNetwork {
 			return;
 		}
 		amount = Math.max(amount, TERMINAL_MIN_SEND);
-		if (terminal.store[RESOURCE_ENERGY] < 10000 || terminal.storeCapacity - _.sum(terminal.store) < amount) {
+		if (terminal.store[RESOURCE_ENERGY] < 10000 || terminal.store.getCapacity() - terminal.store.getUsedCapacity() < amount) {
 			return;
 		}
 		let ordersForMineral = Game.market.getAllOrders({resourceType: resource, type: ORDER_SELL});
@@ -319,7 +319,7 @@ export class TraderJoe implements ITradeNetwork {
 
 			const ordersOfType = _.filter(Game.market.orders, o => o.type == ORDER_BUY && o.resourceType == resource);
 			if (ordersOfType.length < maxOrdersOfType) {
-				const ret = Game.market.createOrder(ORDER_BUY, resource, marketHigh, amount, terminal.room.name);
+				const ret = Game.market.createOrder({ type: ORDER_BUY, resourceType: resource, price: marketHigh, totalAmount: amount, roomName: terminal.room.name } );
 				this.notify(`${terminal.room.print}: creating buy order for ${resource} at price ${marketHigh}. ` +
 							`Response: ${ret}`);
 			}
@@ -362,7 +362,7 @@ export class TraderJoe implements ITradeNetwork {
 
 			const ordersOfType = _.filter(Game.market.orders, o => o.type == ORDER_SELL && o.resourceType == resource);
 			if (ordersOfType.length < maxOrdersOfType) {
-				const ret = Game.market.createOrder(ORDER_SELL, resource, marketLow, amount, terminal.room.name);
+				const ret = Game.market.createOrder({ type: ORDER_SELL, resourceType: resource, price: marketLow, totalAmount: amount, roomName: terminal.room.name});
 				this.notify(`${terminal.room.print}: creating sell order for ${resource} at price ${marketLow}. ` +
 							`Response: ${ret}`);
 			}

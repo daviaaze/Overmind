@@ -7,6 +7,7 @@
 
 */
 
+import { object } from 'lodash';
 import {NeuralZerg} from '../zerg/NeuralZerg';
 import {RL_TRAINING_VERBOSITY} from '../~settings';
 import {TrainingOpponents} from './trainingOpponents';
@@ -15,12 +16,12 @@ export const RL_ACTION_SEGMENT = 70;
 
 export type RLAction =
 	['move', DirectionConstant]
-	| ['goTo', string]
-	| ['attack', string]
-	| ['rangedAttack', string]
+	| ['goTo', Id<Structure | Creep | ConstructionSite>]
+	| ['attack', Id<Structure | Creep | ConstructionSite>]
+	| ['rangedAttack', Id<Structure | Creep>]
 	| ['rangedMassAttack', null]
-	| ['heal', string]
-	| ['rangedHeal', string]
+	| ['heal', Id<Structure | Creep | ConstructionSite>]
+	| ['rangedHeal', Id<Structure | Creep | ConstructionSite>]
 	| ['approachHostiles', null]
 	| ['avoidHostiles', null]
 	| ['approachAllies', null]
@@ -41,8 +42,13 @@ export class ActionParser {
 	private static parseAction(actor: NeuralZerg, action: RLAction, autoEngage = true): boolean {
 
 		const command: string = action[0];
-		const predicate: any = action[1];
-		const targ: RoomObject | null = typeof predicate == 'string' ? Game.getObjectById(predicate) : null;
+		const predicate: Id<Structure<StructureConstant> 
+		| Creep 
+		| ConstructionSite<BuildableStructureConstant>> 
+		| DirectionConstant 
+		| [string[], string[]] 
+		| null = action[1];
+		const targ: RoomObject | null = typeof predicate === 'symbol' ? Game.getObjectById(predicate) : null;
 
 		switch (command) {
 			case 'move':
@@ -63,7 +69,7 @@ export class ActionParser {
 			case 'heal':
 				if (targ) {
 					actor.heal(<Creep>targ);
-				} else if (typeof predicate != 'string') {
+				} else if (typeof predicate !== 'string' && predicate !== null) {
 					actor.heal(actor);
 				}
 				break;
@@ -83,9 +89,10 @@ export class ActionParser {
 				actor.avoidAllies();
 				break;
 			case 'maneuver':
-				const approachNames: string[] = predicate[0];
-				const avoidNames: string[] = predicate[1];
+				const approachNames: string[] = (predicate as [string[], string[]])[0];
+				const avoidNames: string[] = (predicate as [string[], string[]])[1];
 				const approachTargs = _.map(approachNames, name => Game.creeps[name]);
+
 				const avoidTargs = _.map(avoidNames, name => Game.creeps[name]);
 				actor.maneuver(approachTargs, avoidTargs);
 				break;

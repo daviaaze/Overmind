@@ -33,7 +33,6 @@
       true,
       "check-catch",
       "check-finally",
-      // "check-else", // putting else on a different line is sometimes useful
       "check-open-brace",
       "check-whitespace"
     ],
@@ -74,7 +73,6 @@
     "quotemark": [
       true,
       "single"
-      // I recognize the irony here
     ],
     "trailing-comma": false,
     "triple-equals": false,

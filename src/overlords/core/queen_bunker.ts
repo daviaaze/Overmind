@@ -243,7 +243,7 @@ export class BunkerQueenOverlord extends Overlord {
 	// 	// // Refill any empty batteries
 	// 	// for (let battery of this.batteries) {
 	// 	// 	if (!battery.isFull) {
-	// 	// 		let amount = Math.min(battery.storeCapacity - _.sum(battery.store), queen.carryCapacity);
+	// 	// 		let amount = Math.min(battery.store.getCapacity() - _.sum(battery.store), queen.carryCapacity);
 	// 	// 		let target = this.colony.storage || this.colony.storage;
 	// 	// 		if (target) {
 	// 	// 			queen.task = Tasks.transfer(battery, RESOURCE_ENERGY, amount)

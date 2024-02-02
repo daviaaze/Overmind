@@ -398,10 +398,9 @@ export abstract class Overlord {
 			} else {
 				return false;
 			}
-			const body = _.map(setup.generateBody(energyCapacityAvailable), part => ({type: part, hits: 100}));
+			const body = setup.generateBody(energyCapacityAvailable).map(part => ({type: part, hits: 100} as BodyPartDefinition));
 			if (body.length == 0) return false;
-			return _.all(this.boosts[setup.role]!,
-						 boost => this.colony.evolutionChamber!.canBoost(body, boost));
+			return this.boosts[setup.role]!.every(boost => this.colony.evolutionChamber!.canBoost(body, boost)) || false;
 		}
 		return false;
 	}

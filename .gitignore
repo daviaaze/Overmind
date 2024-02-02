@@ -1,6 +1,9 @@
 # Screeps Config
 screeps.json
 
+.envrc
+.direnv
+
 # Ignore basic folders
 /dist
 /node_modules

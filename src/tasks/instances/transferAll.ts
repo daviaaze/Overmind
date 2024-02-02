@@ -33,7 +33,7 @@ export class TaskTransferAll extends Task {
 	}
 
 	isValidTarget() {
-		return _.sum(this.target.store) < this.target.storeCapacity;
+		return _.sum(this.target.store) < this.target.store.getCapacity();
 	}
 
 	work() {

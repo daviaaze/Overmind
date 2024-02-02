@@ -25,7 +25,7 @@ Object.defineProperty(StructureContainer.prototype, 'energy', {
 
 Object.defineProperty(StructureContainer.prototype, 'isFull', { // if this container-like object is full
 	get() {
-		return _.sum(this.store) >= this.storeCapacity;
+		return _.sum(this.store) >= this.store.getCapacity();
 	},
 	configurable: true,
 });
@@ -129,7 +129,7 @@ Object.defineProperty(StructureStorage.prototype, 'energy', {
 
 Object.defineProperty(StructureStorage.prototype, 'isFull', { // if this container-like object is full
 	get() {
-		return _.sum(this.store) >= this.storeCapacity;
+		return _.sum(this.store) >= this.store.getCapacity();
 	},
 	configurable: true,
 });
@@ -153,7 +153,7 @@ Object.defineProperty(StructureTerminal.prototype, 'energy', {
 
 Object.defineProperty(StructureTerminal.prototype, 'isFull', { // if this container-like object is full
 	get() {
-		return _.sum(this.store) >= this.storeCapacity;
+		return _.sum(this.store) >= this.store.getCapacity();
 	},
 	configurable: true,
 });

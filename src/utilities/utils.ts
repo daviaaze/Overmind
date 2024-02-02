@@ -40,7 +40,7 @@ export function hasMinerals(store: { [resourceType: string]: number }): boolean 
 export function getUsername(): string {
 	for (const i in Game.rooms) {
 		const room = Game.rooms[i];
-		if (room.controller && room.controller.my) {
+		if (room.controller !== undefined && room.controller.my && room.controller.owner !== undefined) {
 			return room.controller.owner.username;
 		}
 	}

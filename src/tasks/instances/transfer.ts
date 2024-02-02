@@ -43,7 +43,7 @@ export class TaskTransfer extends Task {
 		if (target instanceof Creep) {
 			return _.sum(target.carry) <= target.carryCapacity - amount;
 		} else if (isStoreStructure(target)) {
-			return _.sum(target.store) <= target.storeCapacity - amount;
+			return target.store.getUsedCapacity() <= target.store.getCapacity() - amount;
 		} else if (isEnergyStructure(target) && this.data.resourceType == RESOURCE_ENERGY) {
 			return target.energy <= target.energyCapacity - amount;
 		} else {

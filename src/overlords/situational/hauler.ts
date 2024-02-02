@@ -37,7 +37,7 @@ export class HaulingOverlord extends Overlord {
 		// Calculate total needed amount of hauling power as (resource amount * trip distance)
 		const tripDistance = 2 * Pathing.distance((this.colony.storage || this.colony).pos, this.directive.pos);
 		const haulingPowerNeeded = Math.min(this.directive.totalResources,
-										  this.colony.storage.storeCapacity
+										  this.colony.storage.store.getCapacity()
 										  - _.sum(this.colony.storage.store)) * tripDistance;
 		// Calculate amount of hauling each hauler provides in a lifetime
 		const haulerCarryParts = Setups.transporters.early.getBodyPotential(CARRY, this.colony);
