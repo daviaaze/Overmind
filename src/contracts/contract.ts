@@ -2,9 +2,9 @@
 
 // TODO: make a (better) extensible contracts module
 export abstract class Contract {
-  constructor () {}
+	constructor() {}
 
-  abstract isValid (): boolean
+	abstract isValid(): boolean;
 
-  abstract run (): any
+	abstract run(): any;
 }

@@ -1,3 +1,3 @@
-import _Assimilator from './Assimilator_obfuscated'
+import _Assimilator from "./Assimilator_obfuscated";
 
-global.Assimilator = new _Assimilator()
+global.Assimilator = new _Assimilator();

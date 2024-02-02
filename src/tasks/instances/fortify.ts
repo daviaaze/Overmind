@@ -1,32 +1,32 @@
-import { profile } from '../../profiler/decorator'
-import { Task } from '../Task'
+import { profile } from "../../profiler/decorator";
+import { Task } from "../Task";
 
-export type fortifyTargetType = StructureWall | StructureRampart
-export const fortifyTaskName = 'fortify'
+export type fortifyTargetType = StructureWall | StructureRampart;
+export const fortifyTaskName = "fortify";
 
 @profile
 export class TaskFortify extends Task {
-  get target (): fortifyTargetType {
-    return super.target as fortifyTargetType
-  }
+	get target(): fortifyTargetType {
+		return super.target as fortifyTargetType;
+	}
 
-  constructor (target: fortifyTargetType, options = {} as TaskOptions) {
-    super(fortifyTaskName, target, options)
-    // Settings
-    this.settings.timeout = 100 // Don't want workers to fortify indefinitely
-    this.settings.targetRange = 3
-    this.settings.workOffRoad = true
-  }
+	constructor(target: fortifyTargetType, options = {} as TaskOptions) {
+		super(fortifyTaskName, target, options);
+		// Settings
+		this.settings.timeout = 100; // Don't want workers to fortify indefinitely
+		this.settings.targetRange = 3;
+		this.settings.workOffRoad = true;
+	}
 
-  isValidTask () {
-    return this.creep.carry.energy > 0 // Times out once creep is out of energy
-  }
+	isValidTask() {
+		return this.creep.carry.energy > 0; // Times out once creep is out of energy
+	}
 
-  isValidTarget () {
-    return this.target && this.target.hits < this.target.hitsMax
-  }
+	isValidTarget() {
+		return this.target && this.target.hits < this.target.hitsMax;
+	}
 
-  work () {
-    return this.creep.repair(this.target)
-  }
+	work() {
+		return this.creep.repair(this.target);
+	}
 }

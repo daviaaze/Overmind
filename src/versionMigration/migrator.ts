@@ -1,18 +1,18 @@
-import _ from 'lodash'
-import { log } from '../console/log'
-import { Mem } from '../memory/Memory'
-import { DirectiveHarvestMemory } from 'directives/resource/harvest'
+import _ from "lodash";
+import { log } from "../console/log";
+import { Mem } from "../memory/Memory";
+import { DirectiveHarvestMemory } from "directives/resource/harvest";
 
 interface VersionMigratorMemory {
-  versions: Record<string, boolean>
+	versions: Record<string, boolean>;
 }
 
 /**
  * The VersionMigration class contains ad-hoc methods for migrating older versions of Overmind to newer versions
  */
 export class VersionMigration {
-  static run (): void {
-    /*
+	static run(): void {
+		/*
 		if (!this.memory.versions['02Xto03X']) {
 			this.migrate_02X_03X();
 		}
@@ -30,33 +30,33 @@ export class VersionMigration {
 		}
 		*/
 
-    if (!this.memory.versions['05Xto051']) {
-      this.migrate_050_051()
-    }
-    if (!this.memory.versions['05Xto051_part2']) {
-      this.migrate_050_051_part2()
-    }
-    if (!this.memory.versions['05Xto051_part3']) {
-      this.migrate_050_051_part3()
-    }
-    if (!this.memory.versions['05Xto051_part4']) {
-      this.migrate_050_051_part4()
-    }
-    if (!this.memory.versions['051to052']) {
-      this.migrate_051_052()
-    }
-    if (!this.memory.versions['052to053']) {
-      this.migrate_052_053()
-    }
-  }
+		if (!this.memory.versions["05Xto051"]) {
+			this.migrate_050_051();
+		}
+		if (!this.memory.versions["05Xto051_part2"]) {
+			this.migrate_050_051_part2();
+		}
+		if (!this.memory.versions["05Xto051_part3"]) {
+			this.migrate_050_051_part3();
+		}
+		if (!this.memory.versions["05Xto051_part4"]) {
+			this.migrate_050_051_part4();
+		}
+		if (!this.memory.versions["051to052"]) {
+			this.migrate_051_052();
+		}
+		if (!this.memory.versions["052to053"]) {
+			this.migrate_052_053();
+		}
+	}
 
-  static get memory (): VersionMigratorMemory {
-    return Mem.wrap(Memory.Overmind, 'versionMigrator', {
-      versions: {}
-    })
-  }
+	static get memory(): VersionMigratorMemory {
+		return Mem.wrap(Memory.Overmind, "versionMigrator", {
+			versions: {}
+		});
+	}
 
-  /*
+	/*
 	static migrate_02X_03X() {
 		// This technically won't run correctly because it gets run only on global reset, but no one is using v0.2.x
 		// anymore anyway, so I don't feel the need to maintain support for this function
@@ -171,182 +171,156 @@ export class VersionMigration {
 
 	*/
 
-  static migrate_050_051 () {
-    // Destroy all links that aren't hatchery or commandCenter links
-    for (const id in Game.structures) {
-      const s = Game.structures[id]
-      if (s.structureType == STRUCTURE_LINK) {
-        const isCommandCenterLink =
-					s.pos.findInRange(
-            _.compact([s.room.storage!, s.room.terminal!]),
-            2
-					).length > 0
-        const isHatcheryLink =
-					s.pos.findInRange(s.room.spawns, 2).length > 0
-        if (!isCommandCenterLink && !isHatcheryLink) {
-          s.destroy()
-        }
-      }
-    }
-    let count = 0
-    for (const name in Game.creeps) {
-      const creep = Game.creeps[name]
-      if (
-        creep.memory.role == 'drone' &&
-				creep.memory.overlord?.includes('miningSite')
-      ) {
-        creep.suicide()
-        count++
-      }
-    }
-    this.memory.versions['05Xto051'] = true
-    log.alert(`Genocide complete: suicided ${count} innocent drones.`)
-    log.alert(
-      'Version migration from 0.5.0 -> 0.5.1 (part 1) completed successfully.'
-    )
-  }
+	static migrate_050_051() {
+		// Destroy all links that aren't hatchery or commandCenter links
+		for (const id in Game.structures) {
+			const s = Game.structures[id];
+			if (s.structureType == STRUCTURE_LINK) {
+				const isCommandCenterLink = s.pos.findInRange(_.compact([s.room.storage!, s.room.terminal!]), 2).length > 0;
+				const isHatcheryLink = s.pos.findInRange(s.room.spawns, 2).length > 0;
+				if (!isCommandCenterLink && !isHatcheryLink) {
+					s.destroy();
+				}
+			}
+		}
+		let count = 0;
+		for (const name in Game.creeps) {
+			const creep = Game.creeps[name];
+			if (creep.memory.role == "drone" && creep.memory.overlord?.includes("miningSite")) {
+				creep.suicide();
+				count++;
+			}
+		}
+		this.memory.versions["05Xto051"] = true;
+		log.alert(`Genocide complete: suicided ${count} innocent drones.`);
+		log.alert("Version migration from 0.5.0 -> 0.5.1 (part 1) completed successfully.");
+	}
 
-  static migrate_050_051_part2 () {
-    // Destroy all links that aren't hatchery or commandCenter links
-    for (const name in Game.creeps) {
-      const creep = Game.creeps[name]
-      if (creep.memory.role == 'reserver') {
-        creep.memory.role = 'infestor'
-      } else if (creep.memory.role == 'guard') {
-        creep.memory.role = 'broodling'
-      }
-    }
-    this.memory.versions['05Xto051_part2'] = true
-    log.alert(
-      'Version migration from 0.5.0 -> 0.5.1 (part 2) completed successfully.'
-    )
-  }
+	static migrate_050_051_part2() {
+		// Destroy all links that aren't hatchery or commandCenter links
+		for (const name in Game.creeps) {
+			const creep = Game.creeps[name];
+			if (creep.memory.role == "reserver") {
+				creep.memory.role = "infestor";
+			} else if (creep.memory.role == "guard") {
+				creep.memory.role = "broodling";
+			}
+		}
+		this.memory.versions["05Xto051_part2"] = true;
+		log.alert("Version migration from 0.5.0 -> 0.5.1 (part 2) completed successfully.");
+	}
 
-  static migrate_050_051_part3 () {
-    if (Memory.assimilator?.users) {
-      delete Memory.assimilator.users
-    }
-    this.memory.versions['05Xto051_part3'] = true
-    log.alert(
-      'Version migration from 0.5.0 -> 0.5.1 (part 3) completed successfully.'
-    )
-  }
+	static migrate_050_051_part3() {
+		if (Memory.assimilator?.users) {
+			delete Memory.assimilator.users;
+		}
+		this.memory.versions["05Xto051_part3"] = true;
+		log.alert("Version migration from 0.5.0 -> 0.5.1 (part 3) completed successfully.");
+	}
 
-  static migrate_050_051_part4 () {
-    const protectedKeywords = [
-      'suspendUntil',
-      'amount',
-      'created',
-      'persistent',
-      'setPosition',
-      'rotation',
-      'colony',
-      'parent',
-      'pathing',
-      'stats',
-      'safeTick',
-      'enhanced',
-      'persistent',
-      'recoveryWaypoint',
-      'totalResources',
-      'maxPathLength',
-      'maxLinearRange'
-    ]
-    for (const name in Memory.flags) {
-      for (const prop in Memory.flags[name]) {
-        if (!protectedKeywords.includes(prop)) {
-          delete (Memory.flags[name])[prop as keyof FlagMemory]
-        }
-      }
-    }
-    this.memory.versions['05Xto051_part4'] = true
-    log.alert(
-      'Version migration from 0.5.0 -> 0.5.1 (part 4) completed successfully.'
-    )
-  }
+	static migrate_050_051_part4() {
+		const protectedKeywords = [
+			"suspendUntil",
+			"amount",
+			"created",
+			"persistent",
+			"setPosition",
+			"rotation",
+			"colony",
+			"parent",
+			"pathing",
+			"stats",
+			"safeTick",
+			"enhanced",
+			"persistent",
+			"recoveryWaypoint",
+			"totalResources",
+			"maxPathLength",
+			"maxLinearRange"
+		];
+		for (const name in Memory.flags) {
+			for (const prop in Memory.flags[name]) {
+				if (!protectedKeywords.includes(prop)) {
+					delete Memory.flags[name][prop as keyof FlagMemory];
+				}
+			}
+		}
+		this.memory.versions["05Xto051_part4"] = true;
+		log.alert("Version migration from 0.5.0 -> 0.5.1 (part 4) completed successfully.");
+	}
 
-  static migrate_051_052 () {
-    if (__VERSION__ == '0.5.2') {
-      for (const name in Game.creeps) {
-        if (name.includes('mutalisk')) {
-          Game.creeps[name].suicide()
-        }
-      }
-    }
-    this.memory.versions['051to052'] = true
-    log.alert(
-      'Version migration from 0.5.1 -> 0.5.2 completed successfully.'
-    )
-  }
+	static migrate_051_052() {
+		if (__VERSION__ == "0.5.2") {
+			for (const name in Game.creeps) {
+				if (name.includes("mutalisk")) {
+					Game.creeps[name].suicide();
+				}
+			}
+		}
+		this.memory.versions["051to052"] = true;
+		log.alert("Version migration from 0.5.1 -> 0.5.2 completed successfully.");
+	}
 
-  static migrate_052_053 () {
-    // Reformat flag and harvest directive memory
-    const newFlagKeys: Record<string, string> = {
-      created: _MEM.TICK,
-      expiration: _MEM.EXPIRATION,
-      overlord: _MEM.OVERLORD,
-      colony: _MEM.COLONY
-    }
-    for (const name in Memory.flags) {
-      // Replace old keys with new ones
-      Memory.flags[name] = _.mapKeys(
-        (Memory.flags[name]),
-        function (value, key) {
-          return newFlagKeys[key] || key
-        }
-      ) as FlagMemory
+	static migrate_052_053() {
+		// Reformat flag and harvest directive memory
+		const newFlagKeys: Record<string, string> = {
+			created: _MEM.TICK,
+			expiration: _MEM.EXPIRATION,
+			overlord: _MEM.OVERLORD,
+			colony: _MEM.COLONY
+		};
+		for (const name in Memory.flags) {
+			// Replace old keys with new ones
+			Memory.flags[name] = _.mapKeys(Memory.flags[name], function (value, key) {
+				return newFlagKeys[key] || key;
+			}) as FlagMemory;
 
-      // Special opertions for harvest flags
-      if (name.includes('harvest:')) {
-        const pathing = Memory.flags[name].pathing
-        if (pathing) {
-          (Memory.flags[name] as DirectiveHarvestMemory).P = {
-            D: pathing.distance,
-            X: pathing.expiration
-          }
-          delete Memory.flags[name].pathing
-        }
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (Memory.flags[name] as DirectiveHarvestMemory).u = (Memory.flags[name] as any).stats.usage;
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (Memory.flags[name] as DirectiveHarvestMemory).d = (Memory.flags[name] as any).stats.downtime
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        delete (Memory.flags[name] as any).stats
-      }
-    }
+			// Special opertions for harvest flags
+			if (name.includes("harvest:")) {
+				const pathing = Memory.flags[name].pathing;
+				if (pathing) {
+					(Memory.flags[name] as DirectiveHarvestMemory).P = {
+						D: pathing.distance,
+						X: pathing.expiration
+					};
+					delete Memory.flags[name].pathing;
+				}
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				(Memory.flags[name] as DirectiveHarvestMemory).u = (Memory.flags[name] as any).stats.usage;
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				(Memory.flags[name] as DirectiveHarvestMemory).d = (Memory.flags[name] as any).stats.downtime;
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				delete (Memory.flags[name] as any).stats;
+			}
+		}
 
-    // Reformat creep memory
-    const newCreepKeys: Record<string, string> = {
-      overlord: _MEM.OVERLORD,
-      colony: _MEM.COLONY
-    }
-    for (const name in Memory.creeps) {
-      // Replace old keys with new ones
-      (Memory.creeps[name] as unknown) = _.mapKeys(
-        Memory.creeps[name],
-        function (value, key) {
-          return newCreepKeys[key] || key
-        }
-      )
-    }
+		// Reformat creep memory
+		const newCreepKeys: Record<string, string> = {
+			overlord: _MEM.OVERLORD,
+			colony: _MEM.COLONY
+		};
+		for (const name in Memory.creeps) {
+			// Replace old keys with new ones
+			(Memory.creeps[name] as unknown) = _.mapKeys(Memory.creeps[name], function (value, key) {
+				return newCreepKeys[key] || key;
+			});
+		}
 
-    // Delete outdated colony memory properties
-    for (const name in Memory.colonies) {
-      for (const key in Memory.colonies[name]) {
-        if (key.includes('miningSite@')) {
-          delete Memory.colonies[name][key]
-        }
-      }
-    }
+		// Delete outdated colony memory properties
+		for (const name in Memory.colonies) {
+			for (const key in Memory.colonies[name]) {
+				if (key.includes("miningSite@")) {
+					delete Memory.colonies[name][key];
+				}
+			}
+		}
 
-    // Delete ALL room memory
-    for (const name in Memory.rooms) {
-      delete Memory.rooms[name]
-    }
+		// Delete ALL room memory
+		for (const name in Memory.rooms) {
+			delete Memory.rooms[name];
+		}
 
-    this.memory.versions['052to053'] = true
-    log.alert(
-      'Version migration from 0.5.2 -> 0.5.3 completed successfully.'
-    )
-  }
+		this.memory.versions["052to053"] = true;
+		log.alert("Version migration from 0.5.2 -> 0.5.3 completed successfully.");
+	}
 }

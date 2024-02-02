@@ -1,32 +1,29 @@
-import { profile } from '../../profiler/decorator'
-import { Task } from '../Task'
+import { profile } from "../../profiler/decorator";
+import { Task } from "../Task";
 
-export type reserveTargetType = StructureController
-export const reserveTaskName = 'colony'
+export type reserveTargetType = StructureController;
+export const reserveTaskName = "colony";
 
 @profile
 export class TaskReserve extends Task {
-  get target (): reserveTargetType {
-    return super.target as reserveTargetType
-  }
+	get target(): reserveTargetType {
+		return super.target as reserveTargetType;
+	}
 
-  constructor (target: reserveTargetType, options = {} as TaskOptions) {
-    super(reserveTaskName, target, options)
-  }
+	constructor(target: reserveTargetType, options = {} as TaskOptions) {
+		super(reserveTaskName, target, options);
+	}
 
-  isValidTask () {
-    return this.creep.getActiveBodyparts(CLAIM) > 0
-  }
+	isValidTask() {
+		return this.creep.getActiveBodyparts(CLAIM) > 0;
+	}
 
-  isValidTarget () {
-    const target = this.target
-    return (
-      target != null &&
-			(!target.reservation || target.reservation.ticksToEnd < 4999)
-    )
-  }
+	isValidTarget() {
+		const target = this.target;
+		return target != null && (!target.reservation || target.reservation.ticksToEnd < 4999);
+	}
 
-  work () {
-    return this.creep.reserveController(this.target)
-  }
+	work() {
+		return this.creep.reserveController(this.target);
+	}
 }

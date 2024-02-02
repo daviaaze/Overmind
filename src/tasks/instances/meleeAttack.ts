@@ -1,31 +1,31 @@
-import { profile } from '../../profiler/decorator'
-import { Task } from '../Task'
+import { profile } from "../../profiler/decorator";
+import { Task } from "../Task";
 
-export type meleeAttackTargetType = Creep | Structure
-export const meleeAttackTaskName = 'meleeAttack'
+export type meleeAttackTargetType = Creep | Structure;
+export const meleeAttackTaskName = "meleeAttack";
 
 @profile
 export class TaskMeleeAttack extends Task {
-  get target (): meleeAttackTargetType {
-    return super.target as meleeAttackTargetType
-  }
+	get target(): meleeAttackTargetType {
+		return super.target as meleeAttackTargetType;
+	}
 
-  constructor (target: meleeAttackTargetType, options = {} as TaskOptions) {
-    super(meleeAttackTaskName, target, options)
-    // Settings
-    this.settings.targetRange = 1
-  }
+	constructor(target: meleeAttackTargetType, options = {} as TaskOptions) {
+		super(meleeAttackTaskName, target, options);
+		// Settings
+		this.settings.targetRange = 1;
+	}
 
-  isValidTask () {
-    return this.creep.getActiveBodyparts(ATTACK) > 0
-  }
+	isValidTask() {
+		return this.creep.getActiveBodyparts(ATTACK) > 0;
+	}
 
-  isValidTarget () {
-    const target = this.target
-    return target && target.hits > 0 // && target.my == false);
-  }
+	isValidTarget() {
+		const target = this.target;
+		return target && target.hits > 0; // && target.my == false);
+	}
 
-  work () {
-    return this.creep.attack(this.target)
-  }
+	work() {
+		return this.creep.attack(this.target);
+	}
 }
